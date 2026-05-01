@@ -1,97 +1,92 @@
-'use client';
+import { createClient } from '@/lib/supabase-server';
+import { getTodayRoutine } from '@/lib/routines';
+import HomeClient from './HomeClient';
+import { startOfWeek, endOfWeek } from 'date-fns';
 
-import { useState, useEffect } from 'react';
-import { TodayWorkoutCard } from '@/components/home/TodayWorkoutCard';
-import { StreakStats } from '@/components/home/StreakStats';
-import { WeekCalendar } from '@/components/home/WeekCalendar';
-import { createClient } from '@/lib/supabase-browser';
-import { useProgress } from '@/hooks/useProgress';
-import { motion } from 'framer-motion';
-import { Sparkles, ArrowUpRight } from 'lucide-react';
-import Link from 'next/link';
+export default async function HomePage() {
+  const supabase = await createClient();
+  
+  // 1. Fetch User Profile
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
-export default function HomePage() {
-  const [greeting, setGreeting] = useState('Olá');
-  const [userName, setUserName] = useState('Atleta');
-  const supabase = createClient();
-  const { queryMonthlyStats } = useProgress();
-  const stats = queryMonthlyStats.data || { workouts: 0, volume: 0, streak: 0, hours: 0 };
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        setUserName(user.email.split('@')[0]);
-      }
-    };
-    fetchUser();
+  const userLevel = (profile?.level || 1) as 1 | 2 | 3 | 4 | 5;
+  const userName = profile?.name || user.email?.split('@')[0] || 'Atleta';
+  const userGoal = profile?.goal || 'Força';
 
-    const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) {
-      setGreeting('Bom dia');
-    } else if (hour >= 12 && hour < 18) {
-      setGreeting('Boa tarde');
-    } else {
-      setGreeting('Boa noite');
-    }
-  }, [supabase]);
+  // 2. Fetch Weekly Stats
+  const now = new Date();
+  const start = startOfWeek(now);
+  const end = endOfWeek(now);
 
-  const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.5, staggerChildren: 0.1 }
-    }
-  };
+  const { data: sessions } = await supabase
+    .from('workout_sessions')
+    .select('started_at')
+    .eq('user_id', user.id)
+    .gte('started_at', start.toISOString())
+    .lte('started_at', end.toISOString());
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
-  };
+  const trainedDays = Array.from(new Set((sessions || []).map(s => new Date(s.started_at).getDay())));
+  const sessionsCount = trainedDays.length;
+
+  // 3. Calculate Streak (simple version for server component)
+  // We'll fetch the last 30 sessions to calculate streak
+  const { data: lastSessions } = await supabase
+    .from('workout_sessions')
+    .select('started_at')
+    .eq('user_id', user.id)
+    .order('started_at', { ascending: false })
+    .limit(30);
+
+  const uniqueDates = Array.from(new Set((lastSessions || []).map(s => {
+    const d = new Date(s.started_at);
+    d.setHours(0,0,0,0);
+    return d.getTime();
+  })));
+
+  let streak = 0;
+  let checkDate = new Date();
+  checkDate.setHours(0,0,0,0);
+  
+  // If didn't train today, check if trained yesterday
+  if (!uniqueDates.includes(checkDate.getTime())) {
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  while (uniqueDates.includes(checkDate.getTime())) {
+    streak++;
+    checkDate.setDate(checkDate.getDate() - 1);
+  }
+
+  // 4. Get Today's Routine
+  const todayRoutine = getTodayRoutine(userLevel);
+
+  // 5. Determine Greeting
+  const hour = new Date().getHours();
+  let greeting = 'Boa noite';
+  if (hour >= 5 && hour < 12) greeting = 'Bom dia';
+  else if (hour >= 12 && hour < 18) greeting = 'Boa tarde';
 
   return (
-    <motion.div 
-      className="p-5 flex flex-col gap-6 pt-8 pb-24"
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-    >
-      <motion.header variants={itemVariants}>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">
-          {greeting}, <span className="text-[#22c55e]">{userName}</span>
-        </h1>
-        <p className="text-neutral-400 mt-1">Pronto para superar seus limites hoje?</p>
-      </motion.header>
-
-      <motion.section variants={itemVariants}>
-        <TodayWorkoutCard />
-      </motion.section>
-
-      <motion.section variants={itemVariants} className="flex flex-col gap-4">
-        <div className="flex justify-between items-center px-1">
-          <h2 className="text-lg font-bold text-white">Seu Progresso</h2>
-          <Link href="/progress" className="text-[#22c55e] text-sm font-medium flex items-center">
-            Ver detalhes <ArrowUpRight size={14} className="ml-0.5" />
-          </Link>
-        </div>
-        <StreakStats stats={stats} />
-        <WeekCalendar />
-      </motion.section>
-
-      <motion.section variants={itemVariants} className="flex flex-col gap-4">
-        <h2 className="text-lg font-bold text-white px-1">Progressões Recomendadas</h2>
-        <div className="grid grid-cols-2 gap-3">
-          <Link href="/explore" className="bg-[#141414] p-4 rounded-2xl border border-white/5 hover:border-[#22c55e]/30 transition-all">
-            <p className="text-[#22c55e] text-xs font-bold uppercase mb-1">Peito</p>
-            <p className="text-white font-semibold">Flexão (Push-up)</p>
-          </Link>
-          <Link href="/explore" className="bg-[#141414] p-4 rounded-2xl border border-white/5 hover:border-[#22c55e]/30 transition-all">
-            <p className="text-[#22c55e] text-xs font-bold uppercase mb-1">Costas</p>
-            <p className="text-white font-semibold">Remada Australiana</p>
-          </Link>
-        </div>
-      </motion.section>
-    </motion.div>
+    <HomeClient 
+      profile={{
+        name: userName,
+        level: userLevel,
+        goal: userGoal,
+      }}
+      greeting={greeting}
+      todayRoutine={todayRoutine}
+      weeklyStats={{
+        sessionsCount,
+        streak,
+        trainedDays,
+      }}
+    />
   );
 }

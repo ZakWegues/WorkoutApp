@@ -5,7 +5,7 @@ export type Database = {
         Row: {
           id: string
           name: string
-          level: 'beginner' | 'intermediate' | 'advanced'
+          level: 1 | 2 | 3 | 4 | 5
           goal: 'strength' | 'hypertrophy' | 'endurance' | 'weight_loss' | null
           avatar_url: string | null
           created_at: string
@@ -13,7 +13,7 @@ export type Database = {
         Insert: {
           id: string
           name: string
-          level?: 'beginner' | 'intermediate' | 'advanced'
+          level?: 1 | 2 | 3 | 4 | 5
           goal?: 'strength' | 'hypertrophy' | 'endurance' | 'weight_loss' | null
           avatar_url?: string | null
           created_at?: string
