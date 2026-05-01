@@ -3,50 +3,48 @@
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const supabase = createClient()
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  async function handleLogin(e?: React.FormEvent) {
+    if (e) e.preventDefault()
+    setLoading(true)
+    setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      toast.error('Erro ao fazer login: ' + error.message);
-    } else {
-      toast.success('Login bem-sucedido!');
-      router.refresh();
-      router.push('/');
-    }
-    setLoading(false);
-  };
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      toast.error('Erro ao criar conta: ' + error.message);
-    } else {
-      toast.success('Verifique seu email para confirmar a conta');
+      setError(error.message)
+      setLoading(false)
+      return
     }
-    setLoading(false);
-  };
+
+    router.refresh()
+    setTimeout(() => router.push('/'), 100)
+  }
+
+  async function handleSignUp(e?: React.FormEvent) {
+    if (e) e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    const { error } = await supabase.auth.signUp({ email, password })
+
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+
+    router.refresh()
+    setTimeout(() => router.push('/'), 100)
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center p-5">
