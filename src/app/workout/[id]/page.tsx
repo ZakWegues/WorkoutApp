@@ -6,8 +6,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const supabase = await createClient();
 
-  // Fetch workout with its exercises and the actual exercise details
-  const { data: workout, error } = await supabase
+  const { data: rawWorkout, error } = await supabase
     .from('workouts')
     .select(`
       *,
@@ -19,12 +18,41 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
     .eq('id', id)
     .single();
 
-  if (error || !workout) {
+  if (error || !rawWorkout) {
     notFound();
   }
 
-  // Sort workout exercises by position
-  workout.workout_exercises.sort((a: any, b: any) => a.position - b.position);
+  const workout = rawWorkout as unknown as WorkoutWithExercises;
 
-  return <WorkoutPlayer workout={workout as any} />;
+  workout.workout_exercises.sort((a, b) => a.position - b.position);
+
+  return <WorkoutPlayer workout={workout} />;
+}
+
+interface Exercise {
+  id: string;
+  name: string;
+  muscle_group: string;
+  equipment: string;
+  gif_url: string | null;
+  instructions: string | null;
+}
+
+interface WorkoutExercise {
+  id: string;
+  position: number;
+  sets: number;
+  reps: number;
+  rest_seconds: number;
+  weight_suggestion_kg: number | null;
+  exercises: Exercise;
+}
+
+interface WorkoutWithExercises {
+  id: string;
+  name: string;
+  description: string | null;
+  estimated_duration_min: number | null;
+  is_ai_generated: boolean;
+  workout_exercises: WorkoutExercise[];
 }
