@@ -32,10 +32,13 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
 interface Exercise {
   id: string;
   name: string;
-  muscle_group: string;
-  equipment: string;
-  gif_url: string | null;
+  muscle_group: 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core';
+  secondary_muscles: string[] | null;
+  equipment: 'barbell' | 'dumbbell' | 'cable' | 'machine' | 'bodyweight';
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | null;
   instructions: string | null;
+  gif_url: string | null;
+  created_at: string;
 }
 
 interface WorkoutExercise {
