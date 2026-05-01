@@ -3,16 +3,19 @@ import { notFound } from 'next/navigation';
 import { translations, MuscleGroupKey, EquipmentKey, DifficultyKey } from '@/lib/translations';
 import { ArrowLeft, PlayCircle, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { ExerciseRow } from '@/types/database';
 
 export default async function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   
-  const { data: exercise } = await supabase
+  const { data, error } = await supabase
     .from('exercises')
     .select('*')
     .eq('id', id)
     .single();
+
+  const exercise = data as ExerciseRow;
 
   if (!exercise) {
     notFound();
