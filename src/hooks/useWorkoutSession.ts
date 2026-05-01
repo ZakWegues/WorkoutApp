@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import { toast } from 'sonner';
-import { WorkoutRow, WorkoutExerciseRow, ExerciseRow } from '@/types/database';
+import { WorkoutRow, WorkoutExerciseRow, ExerciseRow, Database } from '@/types/database';
 
 export type FullWorkoutExercise = WorkoutExerciseRow & { exercises: ExerciseRow | null };
 export type FullWorkout = WorkoutRow & { workout_exercises: FullWorkoutExercise[] };
@@ -72,13 +72,15 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
       return 'quick-session-id';
     }
 
+    const insertData: Database['public']['Tables']['workout_sessions']['Insert'] = {
+      workout_id: state.workout.id,
+      user_id: userData.user.id,
+      started_at: state.startedAt,
+    };
+
     const { data, error } = await supabase
       .from('workout_sessions')
-      .insert({
-        workout_id: state.workout.id,
-        user_id: userData.user.id,
-        started_at: state.startedAt,
-      })
+      .insert(insertData)
       .select('id')
       .single();
 
@@ -106,13 +108,15 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
 
     // Save to Supabase if we have a real sessionId
     if (state.sessionId && state.sessionId !== 'quick-session-id') {
-      const { error } = await supabase.from('session_sets').insert({
+      const insertSetData: Database['public']['Tables']['session_sets']['Insert'] = {
         session_id: state.sessionId,
         exercise_id: newSet.exerciseId,
         set_number: newSet.setNumber,
         reps_completed: reps,
         weight_kg: weightKg,
-      });
+      };
+
+      const { error } = await supabase.from('session_sets').insert(insertSetData);
       if (error) {
         toast.error('Erro ao salvar a série.');
       }
