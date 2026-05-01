@@ -8,14 +8,14 @@ import { ExerciseRow } from '@/types/database';
 export default async function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  
+
   const { data, error } = await supabase
     .from('exercises')
     .select('*')
     .eq('id', id)
     .single();
 
-  const exercise = data as ExerciseRow;
+  const exercise = data as unknown as ExerciseRow
 
   if (!exercise) {
     notFound();
