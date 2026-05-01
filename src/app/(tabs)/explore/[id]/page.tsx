@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase-server';
 import { notFound } from 'next/navigation';
-import { translations, MuscleGroupKey, EquipmentKey, DifficultyKey } from '@/lib/translations';
+import { translations, exerciseTranslations, MuscleGroupKey, EquipmentKey, DifficultyKey } from '@/lib/translations';
 import { ArrowLeft, PlayCircle, Plus } from 'lucide-react';
 import Link from 'next/link';
 import type { ExerciseRow } from '@/types/database';
@@ -49,16 +49,17 @@ export default async function ExerciseDetailPage({
 
       <div className="p-5">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-white mb-3">{exercise.name}</h1>
+          <h1 className="text-2xl font-bold text-white mb-1">{exerciseTranslations[exercise.name] || exercise.name}</h1>
+          <p className="text-xs text-neutral-500 font-medium mb-4 uppercase tracking-widest">{exercise.name}</p>
           <div className="flex flex-wrap gap-2">
-            <span className="text-xs font-medium uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1.5 rounded-md">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5">
               {translations.muscleGroups[exercise.muscle_group as MuscleGroupKey]}
             </span>
-            <span className="text-xs font-medium uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1.5 rounded-md">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5">
               {translations.equipment[exercise.equipment as EquipmentKey]}
             </span>
             {exercise.difficulty && (
-              <span className={`text-xs font-medium uppercase tracking-wider px-2.5 py-1.5 rounded-md border ${difficultyColors[exercise.difficulty as DifficultyKey]}`}>
+              <span className={`text-xs font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg border ${difficultyColors[exercise.difficulty as DifficultyKey]}`}>
                 {translations.difficulty[exercise.difficulty as DifficultyKey]}
               </span>
             )}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Minus, Plus, PlayCircle } from 'lucide-react';
 import { useHaptic } from '@/hooks/useHaptic';
 import { FullWorkoutExercise } from '@/hooks/useWorkoutSession';
+import { exerciseTranslations } from '@/lib/translations';
 
 interface ExerciseViewProps {
   exercise: FullWorkoutExercise;
@@ -16,11 +17,9 @@ interface ExerciseViewProps {
 export function ExerciseView({ exercise, currentExerciseNum, totalExercises, currentSetNum, onComplete }: ExerciseViewProps) {
   const { triggerShort } = useHaptic();
   
-  // Local state for inputs
   const [reps, setReps] = useState(exercise.reps);
   const [weight, setWeight] = useState(exercise.weight_suggestion_kg || 0);
 
-  // Load last used weight from local storage if available
   useEffect(() => {
     if (!exercise.exercises) return;
     try {
@@ -51,9 +50,10 @@ export function ExerciseView({ exercise, currentExerciseNum, totalExercises, cur
 
   if (!exercise.exercises) return null;
 
+  const displayName = exerciseTranslations[exercise.exercises.name] || exercise.exercises.name;
+
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a]">
-      {/* Media Placeholder */}
       <div className="w-full aspect-video bg-[#141414] border-b border-white/5 flex flex-col items-center justify-center relative">
         <PlayCircle size={48} className="text-white/20" />
       </div>
@@ -63,12 +63,12 @@ export function ExerciseView({ exercise, currentExerciseNum, totalExercises, cur
           <p className="text-sm text-[#22c55e] font-semibold mb-1 uppercase tracking-wider">
             Exercício {currentExerciseNum} de {totalExercises}
           </p>
-          <h2 className="text-2xl font-bold text-white">{exercise.exercises.name}</h2>
-          <p className="text-neutral-400 mt-1">Série {currentSetNum} de {exercise.sets}</p>
+          <h2 className="text-2xl font-bold text-white">{displayName}</h2>
+          <p className="text-neutral-400 mt-1 font-medium italic text-xs">{exercise.exercises.name}</p>
+          <p className="text-neutral-400 mt-2">Série {currentSetNum} de {exercise.sets}</p>
         </div>
 
         <div className="space-y-6">
-          {/* Weight Input */}
           <div className="bg-[#141414] p-4 rounded-2xl border border-white/5">
             <label className="text-sm font-medium text-neutral-400 mb-3 block text-center uppercase tracking-wide">Peso (kg)</label>
             <div className="flex items-center justify-between">
@@ -90,7 +90,6 @@ export function ExerciseView({ exercise, currentExerciseNum, totalExercises, cur
             </div>
           </div>
 
-          {/* Reps Input */}
           <div className="bg-[#141414] p-4 rounded-2xl border border-white/5">
             <label className="text-sm font-medium text-neutral-400 mb-3 block text-center uppercase tracking-wide">Repetições</label>
             <div className="flex items-center justify-between">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWorkoutSession, FullWorkout } from '@/hooks/useWorkoutSession';
+import { exerciseTranslations } from '@/lib/translations';
 import { WorkoutHeader } from './WorkoutHeader';
 import { ExerciseView } from './ExerciseView';
 import { RestView } from './RestView';
@@ -103,8 +104,8 @@ export function WorkoutPlayer({ workout }: WorkoutPlayerProps) {
                 durationSeconds={state.restSecondsLeft}
                 nextExerciseName={
                   state.currentSetIndex >= currentExercise.sets 
-                    ? (workout.workout_exercises[state.currentExerciseIndex + 1]?.exercises?.name || 'Fim do treino')
-                    : currentExercise.exercises.name
+                    ? (exerciseTranslations[workout.workout_exercises[state.currentExerciseIndex + 1]?.exercises?.name || ''] || workout.workout_exercises[state.currentExerciseIndex + 1]?.exercises?.name || 'Fim do treino')
+                    : (exerciseTranslations[currentExercise.exercises.name] || currentExercise.exercises.name)
                 }
                 nextSetNum={
                   state.currentSetIndex >= currentExercise.sets 

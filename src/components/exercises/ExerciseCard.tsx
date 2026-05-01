@@ -1,11 +1,18 @@
 'use client';
 
 import { ExerciseRow } from '@/types/database';
-import { translations, MuscleGroupKey, EquipmentKey, DifficultyKey } from '@/lib/translations';
+import { 
+  translations, 
+  exerciseTranslations, 
+  MuscleGroupKey, 
+  EquipmentKey, 
+  DifficultyKey 
+} from '@/lib/translations';
 import { Heart, Play } from 'lucide-react';
 import { useFavorites } from '@/hooks/useFavorites';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 interface ExerciseCardProps {
   exercise: ExerciseRow;
@@ -32,7 +39,7 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
     const quickWorkout = {
       id: `quick-${Date.now()}`,
       user_id: null,
-      name: `Treino: ${exercise.name}`,
+      name: `Treino: ${exerciseTranslations[exercise.name] || exercise.name}`,
       description: 'Sessão rápida de um único exercício.',
       estimated_duration_min: 10,
       is_ai_generated: false,
@@ -56,43 +63,45 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
     router.push('/workout/quick');
   };
 
+  const displayName = exerciseTranslations[exercise.name] || exercise.name;
+
   return (
-    <Link href={`/explore/${exercise.id}`} className="block">
-      <div className="bg-[#141414] rounded-2xl p-4 border border-white/5 active:bg-white/5 transition-colors relative">
-        <button 
-          onClick={handleFavorite}
-          className="absolute top-4 right-4 z-10 p-2 -m-2"
-        >
-          <Heart 
-            size={20} 
-            className={favorite ? "fill-red-500 text-red-500" : "text-neutral-500"} 
-          />
-        </button>
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Link href={`/explore/${exercise.id}`} className="block">
+        <div className="bg-[#141414] rounded-3xl p-5 border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all relative group">
+          <button 
+            onClick={handleFavorite}
+            className="absolute top-5 right-5 z-10 p-2 -m-2 opacity-60 group-hover:opacity-100 transition-opacity"
+          >
+            <Heart 
+              size={20} 
+              className={favorite ? "fill-red-500 text-red-500" : "text-neutral-500"} 
+            />
+          </button>
 
-        <h3 className="font-bold text-white text-lg mb-1 pr-8">{exercise.name}</h3>
-        
-        <div className="flex flex-wrap gap-2 mt-3 mb-4">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400 bg-white/5 px-2 py-1 rounded-md">
-            {translations.muscleGroups[exercise.muscle_group as MuscleGroupKey]}
-          </span>
-          <span className="text-[10px] font-medium uppercase tracking-wider text-neutral-400 bg-white/5 px-2 py-1 rounded-md">
-            {translations.equipment[exercise.equipment as EquipmentKey]}
-          </span>
-          {exercise.difficulty && (
-            <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-1 rounded-md border ${difficultyColors[exercise.difficulty as DifficultyKey]}`}>
-              {translations.difficulty[exercise.difficulty as DifficultyKey]}
+          <h3 className="font-bold text-white text-lg mb-1 pr-10">{displayName}</h3>
+          <p className="text-[10px] text-neutral-500 font-medium mb-4 uppercase tracking-widest">{exercise.name}</p>
+          
+          <div className="flex flex-wrap gap-2 mt-auto">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5">
+              {translations.muscleGroups[exercise.muscle_group as MuscleGroupKey]}
             </span>
-          )}
-        </div>
+            {exercise.difficulty && (
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg border ${difficultyColors[exercise.difficulty as DifficultyKey]}`}>
+                {translations.difficulty[exercise.difficulty as DifficultyKey]}
+              </span>
+            )}
+          </div>
 
-        <button 
-          onClick={handleQuickStart}
-          className="w-full flex items-center justify-center py-2.5 bg-[#22c55e]/10 hover:bg-[#22c55e]/20 text-[#22c55e] rounded-xl font-semibold text-sm transition-colors"
-        >
-          <Play size={16} className="mr-2 fill-current" />
-          Treino Rápido
-        </button>
-      </div>
-    </Link>
+          <div className="mt-5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-[#22c55e] text-xs font-bold">
+            <Play size={14} className="mr-1.5 fill-current" />
+            Iniciar Treino Rápido
+          </div>
+        </div>
+      </Link>
+    </motion.div>
   );
 }

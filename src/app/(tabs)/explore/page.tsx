@@ -7,6 +7,7 @@ import { ExerciseCard } from '@/components/exercises/ExerciseCard';
 import { ExerciseSkeleton } from '@/components/exercises/ExerciseSkeleton';
 import { useExercises } from '@/hooks/useExercises';
 import { translations } from '@/lib/translations';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const muscleGroupOptions = [
   { label: 'Todos', value: 'all' },
@@ -26,7 +27,7 @@ const equipmentOptions = [
 
 export default function ExplorePage() {
   const [muscleGroup, setMuscleGroup] = useState('all');
-  const [equipment, setEquipment] = useState('all');
+  const [equipment, setEquipment] = useState('bodyweight'); // Calistenia por padrão
   const [search, setSearch] = useState('');
 
   const { data: exercises, isLoading, error, refetch } = useExercises({
@@ -68,7 +69,7 @@ export default function ExplorePage() {
             </button>
           </div>
         ) : isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2, 3, 4, 5].map(i => <ExerciseSkeleton key={i} />)}
           </div>
         ) : !exercises?.length ? (
@@ -76,10 +77,19 @@ export default function ExplorePage() {
             <p>Nenhum exercício encontrado com estes filtros.</p>
           </div>
         ) : (
-          <div className="space-y-3 pb-safe">
-            {exercises.map((exercise) => (
-              <ExerciseCard key={exercise.id} exercise={exercise} />
-            ))}
+          <div className="grid grid-cols-1 gap-4 pb-24">
+            <AnimatePresence>
+              {exercises.map((exercise, index) => (
+                <motion.div
+                  key={exercise.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <ExerciseCard exercise={exercise} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </div>
