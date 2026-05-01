@@ -30,12 +30,11 @@ export default function ProfilePage() {
   const exportData = async () => {
     if (!user) return;
 
-    const rawData = await supabase
+    const { data } = await supabase
       .from('workout_sessions')
       .select('*, session_sets(*)')
       .eq('user_id', user.id);
 
-    const data = (rawData.data ?? []) as unknown as WorkoutSessionRow[]
     if (!data) return;
 
     const csvContent = "data:text/csv;charset=utf-8,"

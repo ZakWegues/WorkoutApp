@@ -72,7 +72,7 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
       return 'quick-session-id';
     }
 
-    const { data: raw, error } = await supabase
+    const { data, error } = await supabase
       .from('workout_sessions')
       .insert({
         workout_id: state.workout.id,
@@ -88,7 +88,6 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
       return null;
     }
 
-    const data = raw as unknown as { id: string };
     setState(prev => ({ ...prev, sessionId: data.id }));
     return data.id;
   }, [state.sessionId, state.startedAt, state.workout.id, supabase]);

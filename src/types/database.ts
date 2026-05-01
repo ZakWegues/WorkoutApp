@@ -1,12 +1,4 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       profiles: {
@@ -26,14 +18,7 @@ export interface Database {
           avatar_url?: string | null
           created_at?: string
         }
-        Update: {
-          id?: string
-          name?: string
-          level?: 'beginner' | 'intermediate' | 'advanced'
-          goal?: 'strength' | 'hypertrophy' | 'endurance' | 'weight_loss' | null
-          avatar_url?: string | null
-          created_at?: string
-        }
+        Update: Partial<Database['public']['Tables']['profiles']['Insert']>
       }
       exercises: {
         Row: {
@@ -58,17 +43,7 @@ export interface Database {
           gif_url?: string | null
           created_at?: string
         }
-        Update: {
-          id?: string
-          name?: string
-          muscle_group?: 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'core'
-          secondary_muscles?: string[] | null
-          equipment?: 'barbell' | 'dumbbell' | 'cable' | 'machine' | 'bodyweight'
-          difficulty?: 'beginner' | 'intermediate' | 'advanced' | null
-          instructions?: string | null
-          gif_url?: string | null
-          created_at?: string
-        }
+        Update: Partial<Database['public']['Tables']['exercises']['Insert']>
       }
       workouts: {
         Row: {
@@ -89,15 +64,7 @@ export interface Database {
           is_ai_generated?: boolean | null
           created_at?: string
         }
-        Update: {
-          id?: string
-          user_id?: string | null
-          name?: string
-          description?: string | null
-          estimated_duration_min?: number | null
-          is_ai_generated?: boolean | null
-          created_at?: string
-        }
+        Update: Partial<Database['public']['Tables']['workouts']['Insert']>
       }
       workout_exercises: {
         Row: {
@@ -120,16 +87,7 @@ export interface Database {
           rest_seconds?: number
           weight_suggestion_kg?: number | null
         }
-        Update: {
-          id?: string
-          workout_id?: string | null
-          exercise_id?: string | null
-          position?: number
-          sets?: number
-          reps?: number
-          rest_seconds?: number
-          weight_suggestion_kg?: number | null
-        }
+        Update: Partial<Database['public']['Tables']['workout_exercises']['Insert']>
       }
       workout_sessions: {
         Row: {
@@ -148,14 +106,7 @@ export interface Database {
           finished_at?: string | null
           notes?: string | null
         }
-        Update: {
-          id?: string
-          workout_id?: string | null
-          user_id?: string | null
-          started_at?: string
-          finished_at?: string | null
-          notes?: string | null
-        }
+        Update: Partial<Database['public']['Tables']['workout_sessions']['Insert']>
       }
       session_sets: {
         Row: {
@@ -176,28 +127,8 @@ export interface Database {
           weight_kg?: number | null
           completed_at?: string
         }
-        Update: {
-          id?: string
-          session_id?: string | null
-          exercise_id?: string | null
-          set_number?: number
-          reps_completed?: number | null
-          weight_kg?: number | null
-          completed_at?: string
-        }
+        Update: Partial<Database['public']['Tables']['session_sets']['Insert']>
       }
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
     }
   }
 }

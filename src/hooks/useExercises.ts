@@ -28,13 +28,13 @@ export function useExercises({ muscleGroup, equipment, search }: UseExercisesPar
         query = query.ilike('name', `%${search}%`);
       }
 
-      const { data: raw, error } = await query.order('name');
+      const { data, error } = await query.order('name');
 
       if (error) {
         throw error;
       }
 
-      return (raw ?? []) as unknown as ExerciseRow[];
+      return data || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

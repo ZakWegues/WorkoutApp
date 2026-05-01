@@ -2,23 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase-browser';
 import { subDays, subWeeks, startOfWeek, format } from 'date-fns';
 
-export interface ProgressSet {
-  weight_kg: number | null;
-  reps_completed: number | null;
-  completed_at?: string;
-  exercises?: any;
-}
-
-export interface ProgressSession {
-  id: string;
-  started_at: string;
-  finished_at: string | null;
-  workout_id: string | null;
-  user_id: string | null;
-  session_sets: ProgressSet[];
-  workouts?: { name: string };
-}
-
 export function useProgress() {
   const supabase = createClient();
 
@@ -28,13 +11,12 @@ export function useProgress() {
 
     const startDate = subWeeks(new Date(), weeksToFetch);
 
-    const { data: raw } = await supabase
+    const { data } = await supabase
       .from('workout_sessions')
       .select('id, started_at, session_sets(weight_kg, reps_completed)')
       .eq('user_id', user.user.id)
       .gte('started_at', startDate.toISOString());
 
-    const data = (raw ?? []) as unknown as ProgressSession[];
     if (!data || data.length === 0) return [];
 
     const weeks: Record<string, number> = {};
@@ -62,13 +44,12 @@ export function useProgress() {
 
     const startOfMonth = subDays(new Date(), 30);
     
-    const { data: raw } = await supabase
+    const { data } = await supabase
       .from('workout_sessions')
       .select('started_at, finished_at, session_sets(weight_kg, reps_completed)')
       .eq('user_id', user.user.id)
       .order('started_at', { ascending: false });
 
-    const data = (raw ?? []) as unknown as ProgressSession[];
     if (!data || data.length === 0) return { workouts: 0, volume: 0, streak: 0, hours: 0 };
 
     let monthWorkouts = 0;
@@ -128,27 +109,25 @@ export function useProgress() {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return [];
 
-    const { data: raw } = await supabase
+    const { data } = await supabase
       .from('workout_sessions')
       .select('*, workouts(name), session_sets(*, exercises(name))')
       .eq('user_id', user.user.id)
       .order('started_at', { ascending: false })
       .range(page * 10, (page + 1) * 10 - 1);
 
-    const data = (raw ?? []) as unknown as ProgressSession[];
-    return data;
+    return data || [];
   };
 
   const getPersonalRecords = async () => {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return [];
 
-    const { data: raw } = await supabase
+    const { data: setsData } = await supabase
       .from('session_sets')
       .select('weight_kg, completed_at, exercises(id, name, muscle_group, equipment, difficulty)')
       .not('weight_kg', 'is', null);
 
-    const setsData = (raw ?? []) as unknown as ProgressSet[];
     if (!setsData || setsData.length === 0) return [];
 
     const recordsMap = new Map<string, any>();

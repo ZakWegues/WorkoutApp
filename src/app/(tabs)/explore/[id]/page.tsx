@@ -9,13 +9,11 @@ export default async function ExerciseDetailPage({ params }: { params: Promise<{
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data: exercise, error } = await supabase
     .from('exercises')
     .select('*')
     .eq('id', id)
     .single();
-
-  const exercise = data as unknown as ExerciseRow
 
   if (!exercise) {
     notFound();
