@@ -50,9 +50,11 @@ interface WorkoutExercise {
 
 interface WorkoutWithExercises {
   id: string;
+  user_id: string | null;
   name: string;
   description: string | null;
   estimated_duration_min: number | null;
-  is_ai_generated: boolean;
+  is_ai_generated: boolean | null;
+  created_at: string;
   workout_exercises: WorkoutExercise[];
 }
