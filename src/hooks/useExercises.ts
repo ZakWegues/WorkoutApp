@@ -34,7 +34,8 @@ export function useExercises({ muscleGroup, equipment, search }: UseExercisesPar
         throw error;
       }
 
-      return data || [];
+      const exercises = (data ?? []) as ExerciseRow[];
+      return exercises;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

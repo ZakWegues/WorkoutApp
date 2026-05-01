@@ -1,6 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase-browser';
 import { subDays, subWeeks, startOfWeek, format } from 'date-fns';
+import type {
+  ExerciseRow,
+  WorkoutRow,
+  WorkoutExerciseRow,
+  WorkoutSessionRow,
+  SessionSetRow,
+  ProfileRow
+} from '@/types/database'
 
 export function useProgress() {
   const supabase = createClient();
@@ -17,7 +25,9 @@ export function useProgress() {
       .eq('user_id', user.user.id)
       .gte('started_at', startDate.toISOString());
 
-    if (!data || data.length === 0) return [];
+    const sessions = (data ?? []) as (WorkoutSessionRow & { session_sets: SessionSetRow[] })[];
+
+    if (!sessions || sessions.length === 0) return [];
 
     const weeks: Record<string, number> = {};
     for (let i = weeksToFetch - 1; i >= 0; i--) {
@@ -25,7 +35,7 @@ export function useProgress() {
       weeks[format(w, 'MMM dd')] = 0;
     }
 
-    data.forEach(session => {
+    sessions.forEach(session => {
       const weekLabel = format(startOfWeek(new Date(session.started_at)), 'MMM dd');
       const volume = session.session_sets.reduce((acc: number, set: any) => 
         acc + ((set.weight_kg || 0) * (set.reps_completed || 0)), 0);
@@ -50,7 +60,9 @@ export function useProgress() {
       .eq('user_id', user.user.id)
       .order('started_at', { ascending: false });
 
-    if (!data || data.length === 0) return { workouts: 0, volume: 0, streak: 0, hours: 0 };
+    const sessions = (data ?? []) as (WorkoutSessionRow & { session_sets: SessionSetRow[] })[];
+
+    if (!sessions || sessions.length === 0) return { workouts: 0, volume: 0, streak: 0, hours: 0 };
 
     let monthWorkouts = 0;
     let monthVolume = 0;
@@ -61,7 +73,7 @@ export function useProgress() {
     let lastDate = new Date();
     lastDate.setHours(0, 0, 0, 0);
 
-    const uniqueDates = Array.from(new Set(data.map(s => {
+    const uniqueDates = Array.from(new Set(sessions.map(s => {
       const d = new Date(s.started_at);
       d.setHours(0,0,0,0);
       return d.getTime();
@@ -85,7 +97,7 @@ export function useProgress() {
       }
     }
 
-    data.forEach(session => {
+    sessions.forEach(session => {
       if (new Date(session.started_at) >= startOfMonth) {
         monthWorkouts++;
         monthVolume += session.session_sets.reduce((acc: number, set: any) => 
@@ -116,17 +128,20 @@ export function useProgress() {
       .order('started_at', { ascending: false })
       .range(page * 10, (page + 1) * 10 - 1);
 
-    return data || [];
+    const sessions = (data ?? []) as (WorkoutSessionRow & { workouts: any, session_sets: any[] })[];
+    return sessions;
   };
 
   const getPersonalRecords = async () => {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return [];
 
-    const { data: setsData } = await supabase
+    const { data } = await supabase
       .from('session_sets')
       .select('weight_kg, completed_at, exercises(id, name, muscle_group, equipment, difficulty)')
       .not('weight_kg', 'is', null);
+
+    const setsData = (data ?? []) as (SessionSetRow & { exercises: any })[];
 
     if (!setsData || setsData.length === 0) return [];
 

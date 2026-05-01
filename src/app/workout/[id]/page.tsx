@@ -6,7 +6,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: workout, error } = await supabase
+  const { data, error } = await supabase
     .from('workouts')
     .select(`
       *,
@@ -18,10 +18,11 @@ export default async function WorkoutPage({ params }: { params: Promise<{ id: st
     .eq('id', id)
     .single();
 
-  if (error || !workout) {
+  if (error || !data) {
     notFound();
   }
 
+  const workout = data as unknown as WorkoutWithExercises;
   workout.workout_exercises.sort((a, b) => a.position - b.position);
 
   return <WorkoutPlayer workout={workout} />;

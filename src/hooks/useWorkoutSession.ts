@@ -82,14 +82,15 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
       .select('id')
       .single();
 
-    if (error) {
+    if (error || !data) {
       toast.error('Erro ao iniciar sessão.');
       console.error(error);
       return null;
     }
 
-    setState(prev => ({ ...prev, sessionId: data.id }));
-    return data.id;
+    const sessionData = data as WorkoutSessionRow;
+    setState(prev => ({ ...prev, sessionId: sessionData.id }));
+    return sessionData.id;
   }, [state.sessionId, state.startedAt, state.workout.id, supabase]);
 
   const completeSet = useCallback(async (reps: number, weightKg: number) => {

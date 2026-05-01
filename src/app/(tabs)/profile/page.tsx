@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase-browser';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { WorkoutSessionRow } from '@/types/database';
+import type { WorkoutSessionRow, SessionSetRow } from '@/types/database';
 
 export default function ProfilePage() {
   const supabase = createClient();
@@ -35,11 +35,12 @@ export default function ProfilePage() {
       .select('*, session_sets(*)')
       .eq('user_id', user.id);
 
-    if (!data) return;
+    const sessions = (data ?? []) as (WorkoutSessionRow & { session_sets: SessionSetRow[] })[];
+    if (!sessions || sessions.length === 0) return;
 
     const csvContent = "data:text/csv;charset=utf-8,"
       + "id,started_at,finished_at\n"
-      + data.map(row => `${row.id},${row.started_at},${row.finished_at}`).join("\n");
+      + sessions.map(row => `${row.id},${row.started_at},${row.finished_at}`).join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
