@@ -19,7 +19,7 @@ export function useProgress() {
 
     const startDate = subWeeks(new Date(), weeksToFetch);
 
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('workout_sessions')
       .select('id, started_at, session_sets(weight_kg, reps_completed)')
       .eq('user_id', user.user.id)
@@ -54,7 +54,7 @@ export function useProgress() {
 
     const startOfMonth = subDays(new Date(), 30);
     
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('workout_sessions')
       .select('started_at, finished_at, session_sets(weight_kg, reps_completed)')
       .eq('user_id', user.user.id)
@@ -121,7 +121,7 @@ export function useProgress() {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return [];
 
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('workout_sessions')
       .select('*, workouts(name), session_sets(*, exercises(name))')
       .eq('user_id', user.user.id)
@@ -136,7 +136,7 @@ export function useProgress() {
     const { data: user } = await supabase.auth.getUser();
     if (!user.user) return [];
 
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('session_sets')
       .select('weight_kg, completed_at, exercises(id, name, muscle_group, equipment, difficulty)')
       .not('weight_kg', 'is', null);

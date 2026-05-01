@@ -14,7 +14,7 @@ export function useExercises({ muscleGroup, equipment, search }: UseExercisesPar
   return useQuery({
     queryKey: ['exercises', { muscleGroup, equipment, search }],
     queryFn: async () => {
-      let query = supabase.from('exercises').select('*');
+      let query = (supabase as any).from('exercises').select('*');
 
       if (muscleGroup && muscleGroup !== 'all') {
         query = query.eq('muscle_group', muscleGroup);

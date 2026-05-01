@@ -78,7 +78,7 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
       started_at: state.startedAt,
     };
 
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('workout_sessions')
       .insert(insertData)
       .select('id')
@@ -116,7 +116,7 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
         weight_kg: weightKg,
       };
 
-      const { error } = await supabase.from('session_sets').insert(insertSetData);
+      const { error } = await (supabase as any).from('session_sets').insert(insertSetData);
       if (error) {
         toast.error('Erro ao salvar a série.');
       }
@@ -166,7 +166,7 @@ export function useWorkoutSession(initialWorkout: FullWorkout) {
 
   const finishSession = useCallback(async () => {
     if (state.sessionId && state.sessionId !== 'quick-session-id') {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('workout_sessions')
         .update({ finished_at: new Date().toISOString() })
         .eq('id', state.sessionId);
