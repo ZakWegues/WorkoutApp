@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase-browser';
 import { toast } from 'sonner';
-import { WorkoutRow, WorkoutExerciseRow, ExerciseRow, Database } from '@/types/database';
+import { WorkoutRow, WorkoutExerciseRow, ExerciseRow, Database, WorkoutSessionRow } from '@/types/database';
 
 export type FullWorkoutExercise = WorkoutExerciseRow & { exercises: ExerciseRow | null };
 export type FullWorkout = WorkoutRow & { workout_exercises: FullWorkoutExercise[] };
