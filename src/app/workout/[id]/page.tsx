@@ -40,6 +40,8 @@ interface Exercise {
 
 interface WorkoutExercise {
   id: string;
+  workout_id: string | null;
+  exercise_id: string | null;
   position: number;
   sets: number;
   reps: number;
