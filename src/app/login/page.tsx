@@ -25,8 +25,8 @@ export default function LoginPage() {
       toast.error('Erro ao fazer login: ' + error.message);
     } else {
       toast.success('Login bem-sucedido!');
-      router.push('/');
       router.refresh();
+      router.push('/');
     }
     setLoading(false);
   };
@@ -43,7 +43,7 @@ export default function LoginPage() {
     if (error) {
       toast.error('Erro ao criar conta: ' + error.message);
     } else {
-      toast.success('Conta criada! Verifique seu email se necessário e faça login.');
+      toast.success('Verifique seu email para confirmar a conta');
     }
     setLoading(false);
   };
