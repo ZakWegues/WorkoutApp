@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { LogOut, Download, ChevronRight, User } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getLevelColor } from '@/lib/utils';
 import type { WorkoutSessionRow, SessionSetRow, ProfileRow } from '@/types/database';
 
 const levels = [
@@ -55,6 +55,11 @@ export default function ProfilePage() {
     } else {
       setProfile(prev => prev ? { ...prev, level: level as 1 | 2 | 3 | 4 | 5 } : null);
       toast.success(`Nível ${level} selecionado!`);
+      
+      // Update theme color immediately
+      const color = getLevelColor(level);
+      document.documentElement.style.setProperty('--primary-color', color);
+      
       router.refresh();
     }
   };
@@ -104,7 +109,7 @@ export default function ProfilePage() {
 
       {/* User Info */}
       <div className="bg-zinc-900 p-6 rounded-[32px] border border-zinc-800 flex items-center mb-10 shadow-xl shadow-black/20">
-        <div className="w-16 h-16 bg-[#22c55e] text-black font-black text-2xl rounded-2xl flex items-center justify-center mr-5 shadow-lg shadow-[#22c55e]/20">
+        <div className="w-16 h-16 bg-[var(--primary-color)] text-black font-black text-2xl rounded-2xl flex items-center justify-center mr-5 shadow-lg shadow-[var(--primary-color)]/20">
           {initials}
         </div>
         <div>
@@ -126,25 +131,25 @@ export default function ProfilePage() {
                 className={cn(
                   "flex items-center justify-between p-5 rounded-[28px] border transition-all duration-300 text-left active:scale-[0.98]",
                   isActive 
-                    ? "bg-[#22c55e]/5 border-[#22c55e]/30 shadow-[0_0_20px_rgba(34,197,94,0.05)]" 
+                    ? "bg-[var(--primary-color)]/5 border-[var(--primary-color)]/30 shadow-[0_0_20px_rgba(34,197,94,0.05)]" 
                     : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
                 )}
               >
                 <div className="flex items-center gap-4">
                   <div className={cn(
                     "w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all",
-                    isActive ? "bg-[#22c55e] text-black" : "bg-black/40 text-zinc-500"
+                    isActive ? "bg-[var(--primary-color)] text-black" : "bg-black/40 text-zinc-500"
                   )}>
                     {lvl.value}
                   </div>
                   <div>
-                    <p className={cn("font-bold text-sm", isActive ? "text-[#22c55e]" : "text-white")}>{lvl.label}</p>
+                    <p className={cn("font-bold text-sm", isActive ? "text-[var(--primary-color)]" : "text-white")}>{lvl.label}</p>
                     <p className="text-[10px] text-zinc-500 font-medium mt-0.5">{lvl.desc}</p>
                   </div>
                 </div>
                 {isActive && (
-                  <div className="w-5 h-5 rounded-full bg-[#22c55e]/20 flex items-center justify-center">
-                    <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                  <div className="w-5 h-5 rounded-full bg-[var(--primary-color)]/20 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-[var(--primary-color)]" />
                   </div>
                 )}
               </button>
@@ -162,7 +167,7 @@ export default function ProfilePage() {
           className="w-full bg-zinc-900 p-5 rounded-[28px] border border-zinc-800 flex justify-between items-center group hover:border-zinc-700 transition-all active:scale-[0.98]"
         >
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-black/40 rounded-xl flex items-center justify-center text-[#22c55e]">
+            <div className="w-10 h-10 bg-black/40 rounded-xl flex items-center justify-center text-[var(--primary-color)]">
               <Download size={20} />
             </div>
             <span className="text-white font-bold text-sm">Exportar Dados</span>

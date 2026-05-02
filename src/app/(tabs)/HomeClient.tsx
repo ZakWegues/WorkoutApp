@@ -17,9 +17,9 @@ interface HomeClientProps {
 
 const LevelBadge = ({ level }: { level: number }) => (
   <div className="relative">
-    <div className="absolute inset-0 bg-[#22c55e]/20 blur-xl rounded-full" />
+    <div className="absolute inset-0 bg-[var(--primary-color)]/20 blur-xl rounded-full" />
     <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border border-white/10 flex flex-col items-center justify-center shadow-2xl">
-      <span className="text-[10px] font-black uppercase text-[#22c55e] tracking-widest leading-none mb-1">Nível</span>
+      <span className="text-[10px] font-black uppercase text-[var(--primary-color)] tracking-widest leading-none mb-1">Nível</span>
       <span className="text-2xl font-black text-white leading-none">{level}</span>
     </div>
   </div>
@@ -38,7 +38,7 @@ const XPBar = ({ xp, nextLevelXp }: { xp: number, nextLevelXp: number }) => {
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 1, ease: 'easeOut' }}
-          className="h-full bg-gradient-to-r from-[#22c55e] to-emerald-400 shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+          className="h-full bg-gradient-to-r from-[var(--primary-color)] to-[var(--primary-color)] shadow-[0_0_10px_rgba(var(--primary-color-rgb),0.3)]"
         />
       </div>
     </div>
@@ -62,8 +62,22 @@ const FireStreak = ({ streak }: { streak: number }) => (
   </div>
 )
 
+import { getLevelColor } from '@/lib/utils'
+
 export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts, trainedDays }: HomeClientProps) {
   const router = useRouter()
+  
+  useEffect(() => {
+    const color = getLevelColor(userLevel);
+    document.documentElement.style.setProperty('--primary-color', color);
+    // Rough RGB extraction for shadow effects
+    if (color === '#22c55e') document.documentElement.style.setProperty('--primary-color-rgb', '34, 197, 94');
+    else if (color === '#84cc16') document.documentElement.style.setProperty('--primary-color-rgb', '132, 204, 22');
+    else if (color === '#eab308') document.documentElement.style.setProperty('--primary-color-rgb', '234, 179, 8');
+    else if (color === '#f97316') document.documentElement.style.setProperty('--primary-color-rgb', '249, 115, 22');
+    else if (color === '#ef4444') document.documentElement.style.setProperty('--primary-color-rgb', '239, 68, 68');
+  }, [userLevel]);
+
   const [showNotifications, setShowNotifications] = useState(false)
   const [showLevelInfo, setShowLevelInfo] = useState(false)
   const [showWorkoutPreview, setShowWorkoutPreview] = useState(false)
@@ -147,7 +161,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
               className="w-12 h-12 rounded-2xl bg-zinc-900/50 border border-white/5 flex items-center justify-center hover:bg-zinc-800/50 transition-colors relative group active:scale-95"
             >
               <Bell size={20} className="text-zinc-400 group-hover:text-white transition-colors" />
-              <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-[#22c55e] rounded-full ring-4 ring-[#050505] animate-pulse" />
+              <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-[var(--primary-color)] rounded-full ring-4 ring-[#050505] animate-pulse" />
             </button>
           </motion.div>
 
@@ -168,7 +182,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                     {String.fromCharCode(64 + i)}
                   </div>
                 ))}
-                <div className="w-8 h-8 rounded-full border-2 border-[#050505] bg-[#22c55e] text-black flex items-center justify-center text-[10px] font-black">
+                <div className="w-8 h-8 rounded-full border-2 border-[#050505] bg-[var(--primary-color)] text-black flex items-center justify-center text-[10px] font-black">
                   +12
                 </div>
               </div>
@@ -185,7 +199,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
         >
           <div className="flex justify-between items-center mb-5 px-1">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500">Próximo Desafio</h3>
-            <span className="text-[10px] font-black text-[#22c55e] animate-pulse">● AO VIVO</span>
+            <span className="text-[10px] font-black text-[var(--primary-color)] animate-pulse">● AO VIVO</span>
           </div>
 
           {isRestDay ? (
@@ -197,38 +211,38 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
               </p>
             </div>
           ) : (
-            <div className="bg-zinc-900/40 border border-white/10 rounded-[44px] overflow-hidden backdrop-blur-xl relative shadow-2xl group hover:border-[#22c55e]/30 transition-all duration-500">
+            <div className="bg-zinc-900/40 border border-white/10 rounded-[44px] overflow-hidden backdrop-blur-xl relative shadow-2xl group hover:border-[var(--primary-color)]/30 transition-all duration-500">
               <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
                 <span className="text-[120px] leading-none">{label.emoji}</span>
               </div>
               
               <div className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-[#22c55e]/20 flex items-center justify-center text-2xl shadow-inner">
+                  <div className="w-12 h-12 rounded-2xl bg-[var(--primary-color)]/20 flex items-center justify-center text-2xl shadow-inner">
                     {label.emoji}
                   </div>
                   <div>
                     <h2 className="text-white font-black text-2xl tracking-tighter italic uppercase leading-none mb-1">{label.title}</h2>
-                    <p className="text-[10px] font-black text-[#22c55e] uppercase tracking-[0.2em]">{exercises.length} Exercícios · 45 min</p>
+                    <p className="text-[10px] font-black text-[var(--primary-color)] uppercase tracking-[0.2em]">{exercises.length} Exercícios · 45 min</p>
                   </div>
                 </div>
 
                 <div className="space-y-4 mb-10">
                   {exercises.slice(0, 3).map((ex, i) => (
                     <div key={i} className="flex items-center gap-4 group/item">
-                      <div className="w-1 h-8 rounded-full bg-zinc-800 group-hover/item:bg-[#22c55e] transition-all" />
+                      <div className="w-1 h-8 rounded-full bg-zinc-800 group-hover/item:bg-[var(--primary-color)] transition-all" />
                       <div className="flex-1">
                         <p className="text-white text-sm font-black italic uppercase tracking-tight">{ex.name}</p>
                         <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{ex.sets} séries · {ex.reps} reps</p>
                       </div>
-                      <ChevronRight size={14} className="text-zinc-800 group-hover/item:text-[#22c55e] transition-colors" />
+                      <ChevronRight size={14} className="text-zinc-800 group-hover/item:text-[var(--primary-color)] transition-colors" />
                     </div>
                   ))}
                 </div>
 
                 <button
                   onClick={() => setShowWorkoutPreview(true)}
-                  className="w-full bg-[#22c55e] hover:bg-[#1eb054] text-black font-black py-5 rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl shadow-[#22c55e]/20 group/btn relative overflow-hidden"
+                  className="w-full bg-[var(--primary-color)] hover:bg-[#1eb054] text-black font-black py-5 rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl shadow-[#22c55e]/20 group/btn relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   <Play size={20} fill="black" className="relative z-10 group-hover:scale-110 transition-transform" />
@@ -265,7 +279,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                   ].map((n, i) => (
                     <div key={i} className="p-5 rounded-[24px] bg-white/5 border border-white/5">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-sm font-black text-[#22c55e] uppercase tracking-wide">{n.title}</h3>
+                        <h3 className="text-sm font-black text-[var(--primary-color)] uppercase tracking-wide">{n.title}</h3>
                         <span className="text-[10px] text-zinc-600 font-bold">{n.time}</span>
                       </div>
                       <p className="text-xs text-zinc-400 leading-relaxed">{n.desc}</p>
@@ -286,8 +300,8 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                 initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
                 className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-[40px] p-10 text-center"
               >
-                <div className="w-24 h-24 rounded-3xl bg-[#22c55e]/10 border-2 border-[#22c55e]/30 flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(34,197,94,0.2)]">
-                  <span className="text-5xl font-black text-[#22c55e]">L{userLevel}</span>
+                <div className="w-24 h-24 rounded-3xl bg-[var(--primary-color)]/10 border-2 border-[var(--primary-color)]/30 flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(34,197,94,0.2)]">
+                  <span className="text-5xl font-black text-[var(--primary-color)]">L{userLevel}</span>
                 </div>
                 <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-4 text-white">Seu Caminho para a Maestria</h2>
                 <p className="text-zinc-400 text-sm leading-relaxed mb-8">
@@ -295,7 +309,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                 </p>
                 <div className="grid grid-cols-2 gap-4 text-left">
                   <div className="bg-white/5 p-4 rounded-2xl">
-                    <p className="text-[9px] font-black text-[#22c55e] uppercase tracking-[0.2em] mb-1">XP Atual</p>
+                    <p className="text-[9px] font-black text-[var(--primary-color)] uppercase tracking-[0.2em] mb-1">XP Atual</p>
                     <p className="text-lg font-black">{currentXp} XP</p>
                   </div>
                   <div className="bg-white/5 p-4 rounded-2xl">
@@ -321,7 +335,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                 <div className="w-16 h-1.5 bg-zinc-800 rounded-full mx-auto mb-10" />
                 
                 <div className="flex items-center gap-4 mb-8">
-                  <div className="w-14 h-14 rounded-2xl bg-[#22c55e]/20 flex items-center justify-center text-3xl">
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--primary-color)]/20 flex items-center justify-center text-3xl">
                     {label.emoji}
                   </div>
                   <div>
@@ -332,7 +346,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                         <span className="text-[10px] font-black uppercase">45 Minutos</span>
                       </div>
                       <div className="w-1 h-1 rounded-full bg-zinc-800" />
-                      <div className="flex items-center gap-1 text-[#22c55e]">
+                      <div className="flex items-center gap-1 text-[var(--primary-color)]">
                         <CheckCircle2 size={12} />
                         <span className="text-[10px] font-black uppercase">Foco Hipertrofia</span>
                       </div>
@@ -344,7 +358,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                   <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4">Ordem dos Exercícios</h3>
                   {exercises.map((ex, i) => (
                     <div key={i} className="flex items-center gap-5 p-5 rounded-[28px] bg-white/5 border border-white/5 group">
-                      <div className="w-10 h-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-xs font-black text-[#22c55e] group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-xs font-black text-[var(--primary-color)] group-hover:scale-110 transition-transform">
                         {i + 1}
                       </div>
                       <div className="flex-1">
@@ -368,7 +382,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                   </button>
                   <button 
                     onClick={handleStartWorkout}
-                    className="flex-[2] bg-[#22c55e] text-black font-black py-5 rounded-[24px] uppercase tracking-widest text-xs shadow-xl shadow-[#22c55e]/20 active:scale-95 transition-transform"
+                    className="flex-[2] bg-[var(--primary-color)] text-black font-black py-5 rounded-[24px] uppercase tracking-widest text-xs shadow-xl shadow-[#22c55e]/20 active:scale-95 transition-transform"
                   >
                     Começar Treino
                   </button>
@@ -387,7 +401,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
         >
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 rounded-xl bg-zinc-900 flex items-center justify-center">
-              <Bot size={16} className="text-[#22c55e]" />
+              <Bot size={16} className="text-[var(--primary-color)]" />
             </div>
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">Dica do Coach IA</h3>
           </div>
@@ -406,7 +420,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
           <div className="flex justify-between items-center mb-8">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 italic">Sessões Semanais</h3>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
+              <div className="w-2 h-2 rounded-full bg-[var(--primary-color)]" />
               <span className="text-[10px] font-black text-white uppercase tracking-widest">{weeklyWorkouts} Concluídas</span>
             </div>
           </div>
@@ -422,16 +436,16 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                     {isToday && (
                       <motion.div 
                         layoutId="today-glow-main"
-                        className="absolute inset-0 bg-[#22c55e] blur-xl opacity-20 scale-150"
+                        className="absolute inset-0 bg-[var(--primary-color)] blur-xl opacity-20 scale-150"
                       />
                     )}
                     <motion.div 
                       whileHover={{ y: -2 }}
                       className={`w-12 h-12 rounded-[18px] flex items-center justify-center transition-all duration-500 cursor-pointer ${
                         hasTrained 
-                          ? 'bg-[#22c55e] text-black shadow-[0_0_25px_rgba(34,197,94,0.4)]' 
+                          ? 'bg-[var(--primary-color)] text-black shadow-[0_0_25px_rgba(34,197,94,0.4)]' 
                           : isToday
-                          ? 'bg-zinc-800 text-white border-2 border-[#22c55e]/50'
+                          ? 'bg-zinc-800 text-white border-2 border-[var(--primary-color)]/50'
                           : 'bg-zinc-900/50 text-zinc-700 border border-white/5 hover:border-white/10'
                       }`}
                     >
@@ -442,7 +456,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                       )}
                     </motion.div>
                   </div>
-                  {isToday && <div className="w-2 h-2 rounded-full bg-[#22c55e] shadow-[0_0_10px_#22c55e]" />}
+                  {isToday && <div className="w-2 h-2 rounded-full bg-[var(--primary-color)] shadow-[0_0_10px_#22c55e]" />}
                 </div>
               );
             })}
@@ -458,7 +472,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
         >
           <div className="flex justify-between items-center mb-6 px-1">
             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 italic">Meus Favoritos</h3>
-            <button className="text-zinc-600 hover:text-[#22c55e] transition-colors">
+            <button className="text-zinc-600 hover:text-[var(--primary-color)] transition-colors">
               <ChevronRight size={20} />
             </button>
           </div>
@@ -470,7 +484,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                 whileHover={{ y: -4 }}
                 className="flex-shrink-0 w-44 bg-zinc-900/30 border border-white/5 rounded-[32px] p-5 space-y-4 hover:bg-zinc-900/50 transition-all group"
               >
-                <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-white/5 group-hover:border-[#22c55e]/30 transition-colors">
+                <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-white/5 group-hover:border-[var(--primary-color)]/30 transition-colors">
                   <Flame size={20} className="text-zinc-600 group-hover:text-orange-500 transition-colors" />
                 </div>
                 <div>
