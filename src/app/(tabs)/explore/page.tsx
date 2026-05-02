@@ -6,8 +6,9 @@ import { FilterChips } from '@/components/exercises/FilterChips';
 import { ExerciseCard } from '@/components/exercises/ExerciseCard';
 import { ExerciseSkeleton } from '@/components/exercises/ExerciseSkeleton';
 import { useExercises } from '@/hooks/useExercises';
-import { translations } from '@/lib/translations';
+import { translations, MuscleGroupKey, muscleGroupTranslations } from '@/lib/translations';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
 
 const muscleGroupOptions = [
   { label: 'Todos', value: 'all' },
@@ -118,7 +119,7 @@ export default function ExplorePage() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{muscleGroupIcons[mg] || '💪'}</span>
                     <h2 className="text-xl font-black italic uppercase tracking-tight text-white">
-                      {translations.muscleGroups[mg as MuscleGroupKey]}
+                      {muscleGroupTranslations[mg] || mg}
                     </h2>
                   </div>
                   
