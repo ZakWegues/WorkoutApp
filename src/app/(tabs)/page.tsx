@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase-server';
 import { getTodayRoutine } from '@/lib/routines';
 import HomeClient from './HomeClient';
 import { startOfWeek, endOfWeek } from 'date-fns';
-import type { ProfileRow } from '@/types/database';
+import type { ProfileRow, WorkoutSessionRow } from '@/types/database';
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -29,26 +29,30 @@ export default async function HomePage() {
   const start = startOfWeek(now);
   const end = endOfWeek(now);
 
-  const { data: sessions } = await supabase
+  const { data: rawSessions } = await supabase
     .from('workout_sessions')
-    .select('started_at')
+    .select('*')
     .eq('user_id', user.id)
     .gte('started_at', start.toISOString())
     .lte('started_at', end.toISOString());
 
-  const trainedDays = Array.from(new Set((sessions || []).map(s => new Date(s.started_at).getDay())));
+  const sessions = (rawSessions ?? []) as unknown as WorkoutSessionRow[];
+
+  const trainedDays = Array.from(new Set(sessions.map(s => new Date(s.started_at).getDay())));
   const sessionsCount = trainedDays.length;
 
   // 3. Calculate Streak (simple version for server component)
   // We'll fetch the last 30 sessions to calculate streak
-  const { data: lastSessions } = await supabase
+  const { data: rawLastSessions } = await supabase
     .from('workout_sessions')
-    .select('started_at')
+    .select('*')
     .eq('user_id', user.id)
     .order('started_at', { ascending: false })
     .limit(30);
 
-  const uniqueDates = Array.from(new Set((lastSessions || []).map(s => {
+  const lastSessions = (rawLastSessions ?? []) as unknown as WorkoutSessionRow[];
+
+  const uniqueDates = Array.from(new Set(lastSessions.map(s => {
     const d = new Date(s.started_at);
     d.setHours(0,0,0,0);
     return d.getTime();
