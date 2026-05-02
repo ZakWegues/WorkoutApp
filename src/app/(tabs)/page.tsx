@@ -15,7 +15,11 @@ export default async function HomePage() {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     
-    if (user) {
+    if (!user) {
+      const { redirect } = await import('next/navigation');
+      redirect('/login');
+    }
+
       // 1. Fetch User Profile
       const { data: rawProfile } = await supabase
         .from('profiles')

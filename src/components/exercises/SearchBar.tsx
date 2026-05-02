@@ -21,13 +21,13 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
   }, [localValue, onChange]);
 
   return (
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Search size={18} className="text-neutral-500" />
+    <div className="relative group">
+      <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+        <Search size={18} className="text-zinc-500 group-focus-within:text-[#22c55e] transition-colors" />
       </div>
       <input
         type="text"
-        className="block w-full pl-10 pr-10 py-3 bg-[#141414] border border-white/10 rounded-xl text-white placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-[#22c55e] focus:border-[#22c55e] transition-colors"
+        className="block w-full pl-12 pr-12 py-4 bg-zinc-900/50 border border-white/[0.05] rounded-2xl text-white placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-[#22c55e]/30 focus:border-[#22c55e]/30 focus:bg-zinc-900/80 transition-all duration-300"
         placeholder="Buscar exercícios..."
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
@@ -35,9 +35,11 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       {localValue && (
         <button
           onClick={() => setLocalValue('')}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          className="absolute inset-y-0 right-4 flex items-center"
         >
-          <X size={18} className="text-neutral-500 hover:text-white" />
+          <div className="p-1 rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+            <X size={14} className="text-zinc-400" />
+          </div>
         </button>
       )}
     </div>

@@ -67,38 +67,69 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
 
   return (
     <motion.div
-      whileHover={{ y: -2 }}
-      transition={{ duration: 0.2 }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
     >
-      <Link href={`/explore/${exercise.id}`} className="block">
-        <div className="bg-[#141414] rounded-3xl p-5 border border-white/5 hover:border-white/10 hover:bg-white/[0.02] transition-all relative group">
+      <Link href={`/explore/${exercise.id}`} className="block group">
+        <div className="bg-zinc-900/40 backdrop-blur-xl rounded-[32px] p-6 border border-white/[0.05] group-hover:border-[#22c55e]/30 group-hover:bg-zinc-900/60 transition-all relative overflow-hidden shadow-2xl">
+          {/* Background Accent */}
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-[#22c55e]/5 blur-[80px] rounded-full group-hover:bg-[#22c55e]/10 transition-colors" />
+          
           <button 
             onClick={handleFavorite}
-            className="absolute top-5 right-5 z-10 p-2 -m-2 opacity-60 group-hover:opacity-100 transition-opacity"
+            className="absolute top-6 right-6 z-10 p-3 rounded-2xl bg-black/20 backdrop-blur-md border border-white/5 hover:border-red-500/30 transition-all group/fav"
           >
             <Heart 
-              size={20} 
-              className={favorite ? "fill-red-500 text-red-500" : "text-neutral-500"} 
+              size={18} 
+              className={cn(
+                "transition-all duration-300",
+                favorite ? "fill-red-500 text-red-500 scale-110" : "text-zinc-600 group-hover/fav:text-zinc-400"
+              )} 
             />
           </button>
 
-          <h3 className="font-bold text-white text-lg mb-1 pr-10">{displayName}</h3>
-          <p className="text-[10px] text-neutral-500 font-medium mb-4 uppercase tracking-widest">{exercise.name}</p>
-          
-          <div className="flex flex-wrap gap-2 mt-auto">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5">
-              {translations.muscleGroups[exercise.muscle_group as MuscleGroupKey]}
-            </span>
-            {exercise.difficulty && (
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1.5 rounded-lg border ${difficultyColors[exercise.difficulty as DifficultyKey]}`}>
-                {translations.difficulty[exercise.difficulty as DifficultyKey]}
-              </span>
-            )}
-          </div>
+          <div className="relative z-10">
+            <h3 className="font-black text-white text-xl mb-1 pr-12 italic uppercase tracking-tighter leading-tight">
+              {displayName}
+            </h3>
+            <p className="text-[10px] text-[#22c55e] font-black mb-6 uppercase tracking-[0.2em] opacity-80">
+              {exercise.name}
+            </p>
+            
+            <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">
+                <div className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                  {translations.muscleGroups[exercise.muscle_group as MuscleGroupKey]}
+                </span>
+              </div>
+              
+              {exercise.difficulty && (
+                <div className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl border",
+                  difficultyColors[exercise.difficulty as DifficultyKey]
+                )}>
+                  <div className="w-1.5 h-1.5 rounded-full bg-current" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    {translations.difficulty[exercise.difficulty as DifficultyKey]}
+                  </span>
+                </div>
+              )}
+            </div>
 
-          <div className="mt-5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center text-[#22c55e] text-xs font-bold">
-            <Play size={14} className="mr-1.5 fill-current" />
-            Iniciar Treino Rápido
+            <div className="flex items-center justify-between">
+              <div className="flex items-center text-[#22c55e] text-[10px] font-black uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                <div className="w-8 h-8 rounded-full bg-[#22c55e] text-black flex items-center justify-center mr-3 shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                  <Play size={14} fill="currentColor" />
+                </div>
+                Quick Start
+              </div>
+              
+              <div className="text-zinc-700 text-[10px] font-black uppercase tracking-widest group-hover:text-zinc-500 transition-colors">
+                Ver detalhes
+              </div>
+            </div>
           </div>
         </div>
       </Link>

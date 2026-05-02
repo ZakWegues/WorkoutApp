@@ -10,7 +10,7 @@ interface FilterChipsProps {
 
 export function FilterChips({ options, value, onChange }: FilterChipsProps) {
   return (
-    <div className="flex overflow-x-auto hide-scrollbar gap-2 pb-2 -mx-5 px-5">
+    <div className="flex overflow-x-auto no-scrollbar gap-2 pb-1 -mx-5 px-5">
       {options.map((option) => {
         const isSelected = value === option.value;
         return (
