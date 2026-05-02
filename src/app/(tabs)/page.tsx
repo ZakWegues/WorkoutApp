@@ -18,6 +18,7 @@ export default async function HomePage() {
     if (!user) {
       const { redirect } = await import('next/navigation');
       redirect('/login');
+      return null; // unreachable but helps TS
     }
 
       // 1. Fetch User Profile
