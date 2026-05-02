@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import { useProgress } from '@/hooks/useProgress';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { format } from 'date-fns';
 import { TrendingUp, History, Trophy, Calendar, Clock, Flame, Dumbbell } from 'lucide-react';
