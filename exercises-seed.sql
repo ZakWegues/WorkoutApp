@@ -37,9 +37,23 @@ INSERT INTO exercises (name, muscle_group, secondary_muscles, equipment, difficu
 
 -- CORE (core)
 ('Plank', 'core', ARRAY[]::text[], 'bodyweight', 'beginner', 'Apoio nos antebraços e pontas dos pés, mantenha o corpo reto'),
-('Hollow Body Hold', 'core', ARRAY[]::text[], 'bodyweight', 'beginner', 'Deitado, lombar pressionada no chão, pernas e braços elevados'),
-('L-sit', 'core', ARRAY['arms'], 'bodyweight', 'intermediate', 'Apoio nas mãos, pernas estendidas à frente paralelas ao chão'),
-('Dragon Flag', 'core', ARRAY[]::text[], 'bodyweight', 'advanced', 'Apoiado num banco, suba e desça o corpo reto como uma bandeira'),
 ('Ab Wheel Rollout', 'core', ARRAY['shoulders'], 'bodyweight', 'intermediate', 'Com a roda abdominal, estenda o corpo para frente e volte'),
-('Hanging Knee Raise', 'core', ARRAY[]::text[], 'bodyweight', 'beginner', 'Pendurado na barra, suba os joelhos até o peito'),
-('Toes to Bar', 'core', ARRAY[]::text[], 'bodyweight', 'intermediate', 'Pendurado na barra, suba os pés até tocar a barra');
+('Toes to Bar', 'core', ARRAY[]::text[], 'bodyweight', 'intermediate', 'Pendurado na barra, suba os pés até tocar a barra'),
+
+-- BARRA (barbell)
+('Supino Reto', 'chest', ARRAY['triceps', 'shoulders'], 'barbell', 'intermediate', 'Deitado no banco, desça a barra até o peito e empurre'),
+('Agachamento Livre', 'legs', ARRAY['core'], 'barbell', 'intermediate', 'Barra nas costas, agache mantendo a coluna neutra'),
+('Levantamento Terra', 'back', ARRAY['legs', 'core'], 'barbell', 'advanced', 'Tire a barra do chão estendendo o quadril e joelhos'),
+('Desenvolvimento Militar', 'shoulders', ARRAY['triceps'], 'barbell', 'intermediate', 'Empurre a barra acima da cabeça estando de pé'),
+
+-- HALTERE (dumbbell)
+('Supino inclinado com Halteres', 'chest', ARRAY['triceps'], 'dumbbell', 'intermediate', 'Banco inclinado, use halteres para maior amplitude'),
+('Remada Unilateral', 'back', ARRAY['biceps'], 'dumbbell', 'beginner', 'Apoiado no banco, puxe o haltere lateralmente'),
+('Crossover com Halteres', 'chest', ARRAY[]::text[], 'dumbbell', 'intermediate', 'Movimento de abraço com halteres deitado no banco'),
+('Rosca Direta com Halteres', 'arms', ARRAY['biceps'], 'dumbbell', 'beginner', 'Flexão de cotovelo com halteres'),
+
+-- MÁQUINA (machine)
+('Leg Press 45', 'legs', ARRAY[]::text[], 'machine', 'beginner', 'Empurre a plataforma com as pernas no ângulo de 45 graus'),
+('Cadeira Extensora', 'legs', ARRAY[]::text[], 'machine', 'beginner', 'Extensão de joelhos sentada na máquina'),
+('Puxada Frontal', 'back', ARRAY['biceps'], 'machine', 'beginner', 'Puxe a barra da máquina de polia alta até o peito'),
+('Peck Deck', 'chest', ARRAY[]::text[], 'machine', 'beginner', 'Aproxime os braços na frente do peito na máquina');
