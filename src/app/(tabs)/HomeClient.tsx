@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, Flame, Dumbbell, ChevronRight, Play, Bot, Info, CheckCircle2, Clock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
