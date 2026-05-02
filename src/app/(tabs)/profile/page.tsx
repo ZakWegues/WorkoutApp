@@ -31,16 +31,15 @@ export default function ProfilePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        const { data: profile } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
         
-        if (profile) {
-          const p = profile as ProfileRow;
-          setProfile(p);
-          const color = getLevelColor(p.level);
+        if (profileData) {
+          setProfile(profileData);
+          const color = getLevelColor(profileData.level);
           document.documentElement.style.setProperty('--primary-color', color);
         }
       }
@@ -65,17 +64,17 @@ export default function ProfilePage() {
     const color = getLevelColor(level);
     document.documentElement.style.setProperty('--primary-color', color);
 
-    const { error } = await (supabase as any)
+    const { error } = await supabase
       .from('profiles')
       .upsert({ 
         id: user.id, 
-        level: level,
+        level: level as 1 | 2 | 3 | 4 | 5,
         name: profile?.name || user.email?.split('@')[0] || 'Atleta'
       });
 
     if (error) {
       console.error('Update Level Error:', error);
-      toast.error('Erro ao salvar nível no banco');
+      toast.error(`Erro: ${error.message || 'Falha ao salvar no banco'}`);
     } else {
       toast.success(`Nível ${level} selecionado!`);
       router.refresh();
