@@ -5,10 +5,11 @@ import { ExerciseRow } from '@/types/database';
 interface UseExercisesParams {
   muscleGroup?: string;
   equipment?: string;
+  difficulty?: string;
   search?: string;
 }
 
-export function useExercises({ muscleGroup, equipment, search }: UseExercisesParams = {}) {
+export function useExercises({ muscleGroup, equipment, difficulty, search }: UseExercisesParams = {}) {
   const supabase = createClient();
 
   return useQuery({
@@ -22,6 +23,10 @@ export function useExercises({ muscleGroup, equipment, search }: UseExercisesPar
       
       if (equipment && equipment !== 'all') {
         query = query.eq('equipment', equipment);
+      }
+      
+      if (difficulty && difficulty !== 'all') {
+        query = query.eq('difficulty', difficulty);
       }
 
       if (search) {
