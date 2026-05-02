@@ -44,10 +44,11 @@ export default function ProfilePage() {
 
   const updateLevel = async (level: number) => {
     if (!user) return;
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('profiles')
-      .update({ level: level as 1 | 2 | 3 | 4 | 5 })
+      .update({ level: level })
       .eq('id', user.id);
+
 
     if (error) {
       toast.error('Erro ao atualizar nível');
