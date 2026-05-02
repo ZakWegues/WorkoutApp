@@ -1,7 +1,8 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Bell, Flame, Dumbbell, ChevronRight, Play, Bot } from 'lucide-react'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Bell, Flame, Dumbbell, ChevronRight, Play, Bot, Info, CheckCircle2, Clock } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Level } from '@/lib/routines'
 import { getTodayRoutine, dayTypeLabels } from '@/lib/routines'
@@ -62,13 +63,51 @@ const FireStreak = ({ streak }: { streak: number }) => (
 )
 
 export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts, trainedDays }: HomeClientProps) {
-  const router = useRouter()
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showLevelInfo, setShowLevelInfo] = useState(false)
+  const [showWorkoutPreview, setShowWorkoutPreview] = useState(false)
+
   const { dayType, exercises, label } = getTodayRoutine(userLevel)
   const isRestDay = dayType === 'rest'
   
   // Calculate fake XP for UI demo
   const currentXp = (weeklyWorkouts * 125) % 500
   const nextLevelXp = 500
+
+  const handleStartWorkout = () => {
+    const dailyWorkout = {
+      id: `daily-${Date.now()}`,
+      user_id: null,
+      name: label.title,
+      description: label.description,
+      estimated_duration_min: 45,
+      is_ai_generated: false,
+      created_at: new Date().toISOString(),
+      workout_exercises: exercises.map((ex, i) => ({
+        id: `we-${i}`,
+        workout_id: `daily-${Date.now()}`,
+        exercise_id: `ex-${i}`,
+        position: i,
+        sets: ex.sets,
+        reps: typeof ex.reps === 'number' ? ex.reps : 10,
+        rest_seconds: 60,
+        weight_suggestion_kg: 0,
+        exercises: {
+          id: `ex-${i}`,
+          name: ex.nameEn,
+          muscle_group: 'core',
+          equipment: 'bodyweight',
+          difficulty: ex.difficulty,
+          instructions: '',
+          gif_url: null,
+          created_at: new Date().toISOString()
+        }
+      }))
+    };
+    
+    sessionStorage.setItem('quick_workout', JSON.stringify(dailyWorkout));
+    router.push('/workout/quick');
+  };
 
   const greeting = () => {
     const h = new Date().getHours()
@@ -92,7 +131,9 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
             className="flex justify-between items-center"
           >
             <div className="flex items-center gap-4">
-              <LevelBadge level={userLevel} />
+              <button onClick={() => setShowLevelInfo(true)} className="active:scale-95 transition-transform">
+                <LevelBadge level={userLevel} />
+              </button>
               <div>
                 <p className="text-zinc-500 text-sm font-medium tracking-wide">{greeting()}</p>
                 <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent italic uppercase">
@@ -100,7 +141,10 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                 </h1>
               </div>
             </div>
-            <button className="w-12 h-12 rounded-2xl bg-zinc-900/50 border border-white/5 flex items-center justify-center hover:bg-zinc-800/50 transition-colors relative group">
+            <button 
+              onClick={() => setShowNotifications(true)}
+              className="w-12 h-12 rounded-2xl bg-zinc-900/50 border border-white/5 flex items-center justify-center hover:bg-zinc-800/50 transition-colors relative group active:scale-95"
+            >
               <Bell size={20} className="text-zinc-400 group-hover:text-white transition-colors" />
               <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-[#22c55e] rounded-full ring-4 ring-[#050505] animate-pulse" />
             </button>
@@ -182,7 +226,7 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
                 </div>
 
                 <button
-                  onClick={() => router.push('/coach')}
+                  onClick={() => setShowWorkoutPreview(true)}
                   className="w-full bg-[#22c55e] hover:bg-[#1eb054] text-black font-black py-5 rounded-[24px] flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl shadow-[#22c55e]/20 group/btn relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
@@ -193,6 +237,145 @@ export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts
             </div>
           )}
         </motion.div>
+
+        {/* Modals */}
+        <AnimatePresence>
+          {showNotifications && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center px-6"
+            >
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowNotifications(false)} />
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-[40px] p-8 overflow-hidden"
+              >
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-xl font-black italic uppercase tracking-tight">Notificações</h2>
+                  <button onClick={() => setShowNotifications(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors">
+                    <ChevronRight className="rotate-90" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  {[
+                    { title: "Treino Concluído!", time: "2h atrás", desc: "Você completou o Dia de Pull com perfeição." },
+                    { title: "Nova Progressão", time: "1d atrás", desc: "Coach IA sugeriu Archer Pull-ups para você." },
+                    { title: "Streak de 7 Dias!", time: "2d atrás", desc: "Continue assim para ganhar o badge de fogo." }
+                  ].map((n, i) => (
+                    <div key={i} className="p-5 rounded-[24px] bg-white/5 border border-white/5">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-sm font-black text-[#22c55e] uppercase tracking-wide">{n.title}</h3>
+                        <span className="text-[10px] text-zinc-600 font-bold">{n.time}</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 leading-relaxed">{n.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {showLevelInfo && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center px-6"
+            >
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowLevelInfo(false)} />
+              <motion.div 
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-[40px] p-10 text-center"
+              >
+                <div className="w-24 h-24 rounded-3xl bg-[#22c55e]/10 border-2 border-[#22c55e]/30 flex items-center justify-center mx-auto mb-8 shadow-[0_0_50px_rgba(34,197,94,0.2)]">
+                  <span className="text-5xl font-black text-[#22c55e]">L{userLevel}</span>
+                </div>
+                <h2 className="text-2xl font-black italic uppercase tracking-tighter mb-4 text-white">Seu Caminho para a Maestria</h2>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-8">
+                  Você está no nível **{userLevel}**. Complete mais 4 treinos nesta semana para atingir o Nível **{userLevel + 1}** e desbloquear novas progressões avançadas.
+                </p>
+                <div className="grid grid-cols-2 gap-4 text-left">
+                  <div className="bg-white/5 p-4 rounded-2xl">
+                    <p className="text-[9px] font-black text-[#22c55e] uppercase tracking-[0.2em] mb-1">XP Atual</p>
+                    <p className="text-lg font-black">{currentXp} XP</p>
+                  </div>
+                  <div className="bg-white/5 p-4 rounded-2xl">
+                    <p className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-1">Próximo Nível</p>
+                    <p className="text-lg font-black">{nextLevelXp} XP</p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {showWorkoutPreview && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-end justify-center"
+            >
+              <div className="absolute inset-0 bg-black/90 backdrop-blur-xl" onClick={() => setShowWorkoutPreview(false)} />
+              <motion.div 
+                initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="relative w-full max-w-lg bg-zinc-950 border-t border-white/10 rounded-t-[48px] p-8 pb-12 max-h-[90vh] overflow-y-auto no-scrollbar"
+              >
+                <div className="w-16 h-1.5 bg-zinc-800 rounded-full mx-auto mb-10" />
+                
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-[#22c55e]/20 flex items-center justify-center text-3xl">
+                    {label.emoji}
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none mb-2">{label.title}</h2>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1 text-zinc-500">
+                        <Clock size={12} />
+                        <span className="text-[10px] font-black uppercase">45 Minutos</span>
+                      </div>
+                      <div className="w-1 h-1 rounded-full bg-zinc-800" />
+                      <div className="flex items-center gap-1 text-[#22c55e]">
+                        <CheckCircle2 size={12} />
+                        <span className="text-[10px] font-black uppercase">Foco Hipertrofia</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 mb-10">
+                  <h3 className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-4">Ordem dos Exercícios</h3>
+                  {exercises.map((ex, i) => (
+                    <div key={i} className="flex items-center gap-5 p-5 rounded-[28px] bg-white/5 border border-white/5 group">
+                      <div className="w-10 h-10 rounded-full bg-zinc-900 border border-white/5 flex items-center justify-center text-xs font-black text-[#22c55e] group-hover:scale-110 transition-transform">
+                        {i + 1}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white text-sm font-black italic uppercase tracking-tight">{ex.name}</p>
+                        <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest mt-0.5">{ex.sets} Séries · {ex.reps} Reps</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full">
+                        <Info size={12} className="text-zinc-600" />
+                        <span className="text-[9px] font-black text-zinc-400 uppercase">Rest: 60s</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-4">
+                  <button 
+                    onClick={() => setShowWorkoutPreview(false)}
+                    className="flex-1 bg-zinc-900 text-zinc-400 font-black py-5 rounded-[24px] uppercase tracking-widest text-xs border border-white/5"
+                  >
+                    Voltar
+                  </button>
+                  <button 
+                    onClick={handleStartWorkout}
+                    className="flex-[2] bg-[#22c55e] text-black font-black py-5 rounded-[24px] uppercase tracking-widest text-xs shadow-xl shadow-[#22c55e]/20 active:scale-95 transition-transform"
+                  >
+                    Começar Treino
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Dicas da IA Section */}
         <motion.div
