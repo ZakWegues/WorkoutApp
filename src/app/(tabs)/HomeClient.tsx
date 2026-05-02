@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Bell, ChevronRight, CheckCircle2, Sparkles, TrendingUp, Trophy, Flame, Dumbbell } from 'lucide-react';
 import { DifficultyBadge } from '@/components/ui/DifficultyBadge';
 import { DayType, dayTypeLabels, RoutineExercise, Level } from '@/lib/routines';
@@ -26,18 +26,19 @@ interface HomeClientProps {
   };
 }
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
+    transition: { staggerChildren: 0.05 }
   }
 };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } }
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 }
 };
+
 
 export default function HomeClient({ profile, greeting, todayRoutine, weeklyStats }: HomeClientProps) {
   const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
@@ -83,7 +84,11 @@ export default function HomeClient({ profile, greeting, todayRoutine, weeklyStat
       variants={containerVariants}
     >
       {/* Header */}
-      <motion.header variants={itemVariants} className="flex justify-between items-center">
+      <motion.header 
+        variants={itemVariants} 
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="flex justify-between items-center"
+      >
         <div>
           <h1 className="text-2xl font-black text-white tracking-tight">
             {greeting}, <span className="text-[#22c55e]">{profile.name}</span>
@@ -96,7 +101,10 @@ export default function HomeClient({ profile, greeting, todayRoutine, weeklyStat
       </motion.header>
 
       {/* Today's Workout Card */}
-      <motion.section variants={itemVariants}>
+      <motion.section 
+        variants={itemVariants}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
         <div className="bg-zinc-900 rounded-[32px] p-6 border border-zinc-800 relative overflow-hidden group">
           <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#22c55e]/5 rounded-full blur-3xl transition-all group-hover:bg-[#22c55e]/10" />
           
@@ -138,7 +146,11 @@ export default function HomeClient({ profile, greeting, todayRoutine, weeklyStat
       </motion.section>
 
       {/* Stats Row */}
-      <motion.section variants={itemVariants} className="grid grid-cols-3 gap-3">
+      <motion.section 
+        variants={itemVariants} 
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="grid grid-cols-3 gap-3"
+      >
         <div className="bg-zinc-900 p-5 rounded-[32px] border border-zinc-800 flex flex-col items-center justify-center text-center">
           <div className="w-10 h-10 bg-orange-500/10 rounded-full flex items-center justify-center mb-3">
             <Flame size={20} className="text-orange-500" />
@@ -170,7 +182,11 @@ export default function HomeClient({ profile, greeting, todayRoutine, weeklyStat
       </motion.section>
 
       {/* Weekly Tracker */}
-      <motion.section variants={itemVariants} className="bg-zinc-900 p-7 rounded-[32px] border border-zinc-800">
+      <motion.section 
+        variants={itemVariants} 
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="bg-zinc-900 p-7 rounded-[32px] border border-zinc-800"
+      >
         <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-8">Sua Semana</h4>
         <div className="flex justify-between items-center">
           {weekDays.map((day, i) => {
@@ -202,7 +218,10 @@ export default function HomeClient({ profile, greeting, todayRoutine, weeklyStat
       </motion.section>
 
       {/* Recommended Progressions */}
-      <motion.section variants={itemVariants}>
+      <motion.section 
+        variants={itemVariants}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+      >
         <div className="flex justify-between items-center mb-6 px-1">
           <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Progressões Recomendadas</h4>
           <Link href="/explore" className="text-[10px] font-black text-[#22c55e] uppercase tracking-widest hover:underline transition-all">Ver Tudo</Link>
