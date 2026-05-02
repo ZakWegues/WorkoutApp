@@ -46,13 +46,13 @@ export default function ProfilePage() {
     if (!user) return;
     const { error } = await supabase
       .from('profiles')
-      .update({ level: level as any })
+      .update({ level: level as 1 | 2 | 3 | 4 | 5 })
       .eq('id', user.id);
 
     if (error) {
       toast.error('Erro ao atualizar nível');
     } else {
-      setProfile(prev => prev ? { ...prev, level: level as any } : null);
+      setProfile(prev => prev ? { ...prev, level: level as 1 | 2 | 3 | 4 | 5 } : null);
       toast.success(`Nível ${level} selecionado!`);
       router.refresh();
     }
@@ -98,24 +98,24 @@ export default function ProfilePage() {
     : user.email?.substring(0, 2).toUpperCase() || 'U';
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0a0a0a] p-5 pt-8 pb-32">
+    <div className="flex flex-col min-h-screen bg-[#0a0a0a] p-5 pt-8 pb-32 max-w-md mx-auto">
       <h1 className="text-3xl font-black text-white mb-8 tracking-tight">Perfil</h1>
 
       {/* User Info */}
-      <div className="bg-[#141414] p-6 rounded-[32px] border border-white/5 flex items-center mb-8">
+      <div className="bg-zinc-900 p-6 rounded-[32px] border border-zinc-800 flex items-center mb-10 shadow-xl shadow-black/20">
         <div className="w-16 h-16 bg-[#22c55e] text-black font-black text-2xl rounded-2xl flex items-center justify-center mr-5 shadow-lg shadow-[#22c55e]/20">
           {initials}
         </div>
         <div>
-          <h2 className="font-bold text-white text-lg">{profile?.name || user.email}</h2>
-          <p className="text-neutral-500 text-xs font-bold uppercase tracking-widest mt-0.5">Nível {profile?.level || 1} • {profile?.goal || 'Calistenia'}</p>
+          <h2 className="font-black text-white text-lg">{profile?.name || user.email?.split('@')[0]}</h2>
+          <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-0.5">Nível {profile?.level || 1} • {profile?.goal || 'Calistenia'}</p>
         </div>
       </div>
 
       {/* Level Selector */}
-      <div className="mb-8">
-        <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">Selecione seu Nível</h3>
-        <div className="grid grid-cols-1 gap-2">
+      <div className="mb-10">
+        <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-6 ml-1">Progresso de Nível</h3>
+        <div className="grid grid-cols-1 gap-3">
           {levels.map((lvl) => {
             const isActive = (profile?.level || 1) === lvl.value;
             return (
@@ -123,17 +123,29 @@ export default function ProfilePage() {
                 key={lvl.value}
                 onClick={() => updateLevel(lvl.value)}
                 className={cn(
-                  "flex items-center justify-between p-4 rounded-2xl border transition-all duration-300 text-left",
+                  "flex items-center justify-between p-5 rounded-[28px] border transition-all duration-300 text-left active:scale-[0.98]",
                   isActive 
-                    ? "bg-[#22c55e]/10 border-[#22c55e]/40 shadow-[0_0_15px_rgba(34,197,94,0.1)]" 
-                    : "bg-[#141414] border-white/5 hover:border-white/10"
+                    ? "bg-[#22c55e]/5 border-[#22c55e]/30 shadow-[0_0_20px_rgba(34,197,94,0.05)]" 
+                    : "bg-zinc-900 border-zinc-800 hover:border-zinc-700"
                 )}
               >
-                <div>
-                  <p className={cn("font-bold text-sm", isActive ? "text-[#22c55e]" : "text-white")}>{lvl.label}</p>
-                  <p className="text-[10px] text-neutral-500 mt-0.5">{lvl.desc}</p>
+                <div className="flex items-center gap-4">
+                  <div className={cn(
+                    "w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all",
+                    isActive ? "bg-[#22c55e] text-black" : "bg-black/40 text-zinc-500"
+                  )}>
+                    {lvl.value}
+                  </div>
+                  <div>
+                    <p className={cn("font-bold text-sm", isActive ? "text-[#22c55e]" : "text-white")}>{lvl.label}</p>
+                    <p className="text-[10px] text-zinc-500 font-medium mt-0.5">{lvl.desc}</p>
+                  </div>
                 </div>
-                {isActive && <div className="w-2 h-2 rounded-full bg-[#22c55e] animate-pulse" />}
+                {isActive && (
+                  <div className="w-5 h-5 rounded-full bg-[#22c55e]/20 flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                  </div>
+                )}
               </button>
             );
           })}
@@ -141,29 +153,33 @@ export default function ProfilePage() {
       </div>
 
       {/* Options */}
-      <div className="space-y-3 mb-8">
-        <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-4">Conta & Dados</h3>
+      <div className="space-y-4">
+        <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mb-6 ml-1">Configurações</h3>
         
         <button
           onClick={exportData}
-          className="w-full bg-[#141414] p-5 rounded-2xl border border-white/5 flex justify-between items-center group hover:border-white/10 transition-all"
+          className="w-full bg-zinc-900 p-5 rounded-[28px] border border-zinc-800 flex justify-between items-center group hover:border-zinc-700 transition-all active:scale-[0.98]"
         >
-          <div className="flex items-center gap-3">
-            <Download size={20} className="text-[#22c55e]" />
-            <span className="text-white font-bold text-sm">Exportar Histórico</span>
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-black/40 rounded-xl flex items-center justify-center text-[#22c55e]">
+              <Download size={20} />
+            </div>
+            <span className="text-white font-bold text-sm">Exportar Dados</span>
           </div>
-          <ChevronRight size={18} className="text-zinc-700 group-hover:text-white transition-colors" />
+          <ChevronRight size={18} className="text-zinc-700 group-hover:text-white transition-all transform group-hover:translate-x-1" />
         </button>
 
         <button
           onClick={handleLogout}
-          className="w-full bg-[#141414] p-5 rounded-2xl border border-white/5 flex justify-between items-center group hover:border-red-500/20 transition-all"
+          className="w-full bg-zinc-900 p-5 rounded-[28px] border border-zinc-800 flex justify-between items-center group hover:border-red-500/20 transition-all active:scale-[0.98]"
         >
-          <div className="flex items-center gap-3">
-            <LogOut size={20} className="text-red-500" />
-            <span className="text-white font-bold text-sm">Sair da Conta</span>
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-black/40 rounded-xl flex items-center justify-center text-red-500">
+              <LogOut size={20} />
+            </div>
+            <span className="text-white font-bold text-sm">Sair</span>
           </div>
-          <ChevronRight size={18} className="text-zinc-700 group-hover:text-white transition-colors" />
+          <ChevronRight size={18} className="text-zinc-700 group-hover:text-white transition-all transform group-hover:translate-x-1" />
         </button>
       </div>
     </div>
