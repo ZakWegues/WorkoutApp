@@ -38,8 +38,9 @@ export default function ProfilePage() {
           .single();
         
         if (profile) {
-          setProfile(profile);
-          const color = getLevelColor(profile.level);
+          const p = profile as ProfileRow;
+          setProfile(p);
+          const color = getLevelColor(p.level);
           document.documentElement.style.setProperty('--primary-color', color);
         }
       }
