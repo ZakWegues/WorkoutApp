@@ -76,7 +76,6 @@ export default async function HomePage() {
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
       }
-    }
   } catch (error) {
     console.error('Error fetching home data:', error);
     // Continue with default values
