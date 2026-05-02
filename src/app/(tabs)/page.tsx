@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server';
 import { getTodayRoutine } from '@/lib/routines';
 import HomeClient from './HomeClient';
 import { startOfWeek, endOfWeek } from 'date-fns';
+import type { ProfileRow } from '@/types/database';
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -10,15 +11,18 @@ export default async function HomePage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  const { data: rawProfile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single();
 
-  const userLevel = (profile?.level || 1) as 1 | 2 | 3 | 4 | 5;
+  const profile = rawProfile as unknown as ProfileRow | null;
+
+  const userLevel = ((profile?.level as number) || 1) as 1 | 2 | 3 | 4 | 5;
   const userName = profile?.name || user.email?.split('@')[0] || 'Atleta';
   const userGoal = profile?.goal || 'Força';
+
 
   // 2. Fetch Weekly Stats
   const now = new Date();
