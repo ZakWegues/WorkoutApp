@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bell, Flame, Dumbbell, ChevronRight, Play } from 'lucide-react'
+import { Bell, Flame, Dumbbell, ChevronRight, Play, Bot } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { Level } from '@/lib/routines'
 import { getTodayRoutine, dayTypeLabels } from '@/lib/routines'
