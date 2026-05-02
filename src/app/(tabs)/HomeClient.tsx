@@ -63,6 +63,7 @@ const FireStreak = ({ streak }: { streak: number }) => (
 )
 
 export default function HomeClient({ userName, userLevel, streak, weeklyWorkouts, trainedDays }: HomeClientProps) {
+  const router = useRouter()
   const [showNotifications, setShowNotifications] = useState(false)
   const [showLevelInfo, setShowLevelInfo] = useState(false)
   const [showWorkoutPreview, setShowWorkoutPreview] = useState(false)
